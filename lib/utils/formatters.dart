@@ -2,9 +2,9 @@ import 'package:intl/intl.dart';
 import '../services/currency_service.dart';
 
 // Versión async — convierte Y formatea (úsala cuando puedas usar await)
-Future<String> formatoMonedaAsync(double monto, String from, String to) async {
-  final convertido = await CurrencyService.convert(monto, from, to);
-  return formatoMoneda(convertido, to);
+Future<String> formatoMonedaAsync(double monto, String moneda) async {
+  final montoConvertido = await CurrencyService.convert(monto, 'CLP', moneda);
+  return _formatear(montoConvertido, moneda);
 }
 
 // Versión sync — solo formatea sin convertir (para compatibilidad)

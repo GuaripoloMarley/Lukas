@@ -158,6 +158,7 @@ class _InicioScreenState extends State<InicioScreen> {
                               monto: p.monto,
                               categoria: p.categoria,
                               fecha: p.fecha,
+                              moneda: appState.moneda,
                             ),
                           );
                           _ctrl.clear();
