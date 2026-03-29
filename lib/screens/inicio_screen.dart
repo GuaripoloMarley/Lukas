@@ -270,8 +270,10 @@ class _InicioScreenState extends State<InicioScreen> {
                                         ],
                                       ),
                                     ),
-                                    Text(
-                                      formatoMoneda(g.monto, appState.moneda),
+                                    FutureBuilder<String>(
+  future: formatoMonedaAsync(g.monto, g.moneda, appState.moneda),
+  builder: (context, snapshot) => Text(
+    snapshot.data ?? formatoMoneda(g.monto, appState.moneda),
                                       style: TextStyle(
                                         color: isDark
                                             ? Colors.white

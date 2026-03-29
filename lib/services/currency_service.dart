@@ -8,13 +8,11 @@ class CurrencyService {
   static const String _prefRates = 'exchange_rates';
   static const String _prefDate = 'exchange_rates_date';
 
-  // Obtener tasas — usa caché si ya se consultó hoy
   static Future<Map<String, double>> getRates() async {
     final prefs = await SharedPreferences.getInstance();
     final savedDate = prefs.getString(_prefDate);
     final today = DateTime.now().toIso8601String().substring(0, 10);
 
-    // Si ya tenemos tasas de hoy, las devolvemos sin consultar la API
     if (savedDate == today) {
       final savedRates = prefs.getString(_prefRates);
       if (savedRates != null) {
@@ -23,7 +21,6 @@ class CurrencyService {
       }
     }
 
-    // Si no, consultamos la API
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/$_apiKey/latest/CLP'),
@@ -31,41 +28,38 @@ class CurrencyService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
         final rates = Map<String, double>.from(
           (data['conversion_rates'] as Map).map(
             (k, v) => MapEntry(k, (v as num).toDouble()),
           ),
         );
 
-        // Guardar en caché
         await prefs.setString(_prefRates, jsonEncode(rates));
         await prefs.setString(_prefDate, today);
 
         return rates;
       }
     } catch (e) {
-      // Si falla la API, usar tasas por defecto
+      print('Error: $e');
     }
 
-    // Tasas por defecto si todo falla
     return {'CLP': 1.0, 'USD': 0.00102, 'EUR': 0.00095};
   }
 
-  // Convertir moneda
   static Future<double> convert(double amount, String from, String to) async {
     if (from == to) return amount;
-    final rates = await getRates();
-    if (!rates.containsKey(from) || !rates.containsKey(to)) return amount;
 
-    // Convertir a CLP primero, luego a destino
+    final rates = await getRates();
+
+    if (!rates.containsKey(from) || !rates.containsKey(to)) {
+      return amount;
+    }
+
     final amountInCLP = from == 'CLP' ? amount : amount / rates[from]!;
-    return to == 'CLP' ? amountInCLP : amountInCLP * rates[to]!;
+
+    final result = to == 'CLP' ? amountInCLP : amountInCLP * rates[to]!;
+
+    return result;
   }
 }
-```
-
-Reemplaza `TU_API_KEY_AQUI` con tu key. Guarda con `Ctrl+S` 👍
-
-Pero antes de seguir — necesitas agregar el paquete `http` al pubspec.yaml. En terminal:
-```
-flutter pub add http

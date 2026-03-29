@@ -65,6 +65,7 @@ class _AgregarScreenState extends State<AgregarScreen> {
         monto: monto,
         categoria: _catSeleccionada,
         fecha: _fecha,
+        moneda: appState.moneda, // 👈 ESTA LÍNEA
       ),
     );
 

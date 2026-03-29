@@ -1,6 +1,18 @@
 import 'package:intl/intl.dart';
+import '../services/currency_service.dart';
 
+// Versión async — convierte Y formatea (úsala cuando puedas usar await)
+Future<String> formatoMonedaAsync(double monto, String from, String to) async {
+  final convertido = await CurrencyService.convert(monto, from, to);
+  return formatoMoneda(convertido, to);
+}
+
+// Versión sync — solo formatea sin convertir (para compatibilidad)
 String formatoMoneda(double monto, String moneda) {
+  return _formatear(monto, moneda);
+}
+
+String _formatear(double monto, String moneda) {
   final hasDecimals = moneda != 'CLP' && (monto % 1 != 0);
   final f = NumberFormat.currency(
     symbol: moneda == 'USD' ? 'US\$' : (moneda == 'EUR' ? '€' : '\$'),
@@ -10,5 +22,5 @@ String formatoMoneda(double monto, String moneda) {
   return f.format(monto).replaceAll(',', '.');
 }
 
-// Para compatibilidad con código existente que aún usa formatoCLP
+// Para compatibilidad con código existente
 String formatoCLP(num monto) => formatoMoneda(monto.toDouble(), 'CLP');
