@@ -58,7 +58,7 @@ class _InicioScreenState extends State<InicioScreen> {
                           'BALANCE TOTAL V2',
                           style: TextStyle(
                             color: isDark
-                                ? Colors.white38
+                               ? Colors.white38
                                 : const Color(0xFF64748B),
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
