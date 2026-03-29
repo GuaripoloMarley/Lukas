@@ -316,15 +316,8 @@ class AppState extends ChangeNotifier {
   double get totalMes => gastosMesActual.fold(0.0, (s, g) => s + g.monto);
   bool get puedeAgregar => esPremium || _gastos.length < 50;
 
-  double convertirMoneda(double monto, String de, String a) {
-    const tasas = {'CLP': 1.0, 'USD': 980.0, 'EUR': 1050.0};
-    if (de == a) return monto;
-    if (!tasas.containsKey(de) || !tasas.containsKey(a)) return monto;
-
-    // Convertir de 'de' a CLP
-    double montoEnCLP = monto * tasas[de]!;
-    // Convertir de CLP a 'a'
-    return montoEnCLP / tasas[a]!;
+  Future<double> convertirMoneda(double monto, String de, String a) async {
+    return await CurrencyService.convert(monto, de, a);
   }
 }
 
