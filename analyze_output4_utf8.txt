@@ -1,0 +1,14 @@
+﻿Analyzing lukas...                                              
+
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:261:13 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of multiple underscores - lib\screens\cuentas_screen.dart:157:49 - unnecessary_underscores
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\inicio_screen.dart:146:64 - use_build_context_synchronously
+
+flutter : 3 issues found. (ran in 2.5s)
+En línea: 1 Carácter: 1
++ flutter analyze > analyze_output4.txt 2>&1 ; powershell -NoProfile -C ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (3 issues found. (ran in 2.5s):Str 
+   ing) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

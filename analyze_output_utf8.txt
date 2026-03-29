@@ -1,0 +1,75 @@
+﻿Analyzing lukas...                                              
+
+warning - Unused import: 'categoria.dart' - lib\models\parsed_expense.dart:5:8 - unused_import
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:79:79 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:80:14 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:81:14 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:117:65 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:117:150 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:138:43 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:138:84 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:142:42 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\models\parsed_expense.dart:142:65 - curly_braces_in_flow_control_structures
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\agregar_screen.dart:97:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\agregar_screen.dart:129:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\agregar_screen.dart:135:69 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\agregar_screen.dart:151:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\agregar_screen.dart:182:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ajustes_screen.dart:55:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ajustes_screen.dart:114:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ajustes_screen.dart:170:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ajustes_screen.dart:212:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ajustes_screen.dart:237:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\ajustes_screen.dart:413:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\cuentas_screen.dart:66:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\cuentas_screen.dart:75:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\cuentas_screen.dart:115:29 - deprecated_member_use
+   info - Unnecessary use of multiple underscores - lib\screens\cuentas_screen.dart:157:49 - unnecessary_underscores
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\cuentas_screen.dart:166:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\cuentas_screen.dart:176:41 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\cuentas_screen.dart:338:17 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\inicio_screen.dart:49:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\inicio_screen.dart:88:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\inicio_screen.dart:95:75 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\inicio_screen.dart:120:48 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\inicio_screen.dart:130:48 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\inicio_screen.dart:159:104 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\inicio_screen.dart:173:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\inicio_screen.dart:179:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\inicio_screen.dart:192:87 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\main_screen.dart:45:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\main_screen.dart:46:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\main_screen.dart:109:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:66:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:82:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:108:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:150:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:159:71 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:202:108 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:229:70 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:229:103 - deprecated_member_use
+   info - Unnecessary use of 'toList' in a spread - lib\screens\reportes_screen.dart:236:22 - unnecessary_to_list_in_spreads
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:278:36 - deprecated_member_use
+   info - 'Table.fromTextArray' is deprecated and shouldn't be used. Use TableHelper.fromTextArray() instead - lib\screens\reportes_screen.dart:305:11 - deprecated_member_use
+   info - 'Share' is deprecated and shouldn't be used. Use SharePlus instead - lib\screens\reportes_screen.dart:346:13 - deprecated_member_use
+   info - 'shareXFiles' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead - lib\screens\reportes_screen.dart:346:19 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:365:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reportes_screen.dart:365:129 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\glass_container.dart:28:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\glass_container.dart:32:28 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\glass_container.dart:33:28 - deprecated_member_use
+warning - Unused import: 'dart:convert' - test_parser.dart:4:8 - unused_import
+   info - Don't invoke 'print' in production code - test_parser.dart:19:5 - avoid_print
+   info - Don't invoke 'print' in production code - test_parser.dart:20:5 - avoid_print
+   info - Don't invoke 'print' in production code - test_parser.dart:21:5 - avoid_print
+   info - Statements in an if should be enclosed in a block - test_parser.dart:99:40 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - test_parser.dart:100:8 - curly_braces_in_flow_control_structures
+
+flutter : 64 issues found. (ran in 2.4s)
+En línea: 1 Carácter: 1
++ flutter analyze > analyze_output.txt 2>&1 ; type analyze_output.txt
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (64 issues found. (ran in 2.4s):St 
+   ring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
