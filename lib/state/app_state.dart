@@ -132,7 +132,8 @@ class AppState extends ChangeNotifier {
       // Base de datos aún no inicializada
       debugPrint('Error loading database: $e');
     }
-
+    // Precargar tasas al inicio
+    await CurrencyService.getRates();
     notifyListeners();
   }
 
