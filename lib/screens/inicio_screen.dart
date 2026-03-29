@@ -22,9 +22,7 @@ class _InicioScreenState extends State<InicioScreen> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-  animation: appState,
-  builder: (context, _) {
-    setState(() {}); // 👈 fuerza rebuild
+      animation: appState,
       builder: (context, _) {
         final isDark = appState.modoOscuro;
         final gastos = appState.gastos;
@@ -43,7 +41,6 @@ class _InicioScreenState extends State<InicioScreen> {
             bottom: false,
             child: Column(
               children: [
-                // HERO SECTION
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 40, 24, 32),
                   child: GlassContainer(
@@ -55,10 +52,10 @@ class _InicioScreenState extends State<InicioScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'BALANCE TOTAL V2',
+                          'BALANCE TOTAL',
                           style: TextStyle(
                             color: isDark
-                               ? Colors.white38
+                                ? Colors.white38
                                 : const Color(0xFF64748B),
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
@@ -73,27 +70,30 @@ class _InicioScreenState extends State<InicioScreen> {
                           ),
                           duration: const Duration(seconds: 1),
                           onEnd: () => _lastBalance = appState.totalMes,
-                          builder: (context, value, child) => FutureBuilder<String>(
-  future: formatoMonedaAsync(value, 'CLP', appState.moneda),
-  builder: (context, snapshot) => Text(
-    snapshot.data ?? formatoMoneda(value, appState.moneda),
-    style: GoogleFonts.montserrat(
-      fontSize: 48,
-      fontWeight: FontWeight.w900,
-      letterSpacing: -2,
-      color: isDark
-          ? Colors.white
-          : const Color(0xFF6366F1),
-    ),
-  ),
-),
+                          builder: (context, value, child) =>
+                              FutureBuilder<String>(
+                                future: formatoMonedaAsync(
+                                  value,
+                                  appState.moneda,
+                                ),
+                                builder: (context, snapshot) => Text(
+                                  snapshot.data ??
+                                      formatoMoneda(value, appState.moneda),
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 48,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: -2,
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF6366F1),
+                                  ),
+                                ),
+                              ),
                         ),
                       ],
                     ),
                   ),
                 ),
-
-                // SMART INPUT
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: GlassContainer(
@@ -175,10 +175,7 @@ class _InicioScreenState extends State<InicioScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 32),
-
-                // LISTA RECIENTES
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
@@ -200,7 +197,6 @@ class _InicioScreenState extends State<InicioScreen> {
                     ],
                   ),
                 ),
-
                 Expanded(
                   child: gastos.isEmpty
                       ? Center(
@@ -276,15 +272,23 @@ class _InicioScreenState extends State<InicioScreen> {
                                       ),
                                     ),
                                     FutureBuilder<String>(
-  future: formatoMonedaAsync(g.monto, g.moneda, appState.moneda),
-  builder: (context, snapshot) => Text(
-    snapshot.data ?? formatoMoneda(g.monto, appState.moneda),
-                                      style: TextStyle(
-                                        color: isDark
-                                            ? Colors.white
-                                            : Colors.black87,
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 14,
+                                      future: formatoMonedaAsync(
+                                        g.monto,
+                                        appState.moneda,
+                                      ),
+                                      builder: (context, snapshot) => Text(
+                                        snapshot.data ??
+                                            formatoMoneda(
+                                              g.monto,
+                                              appState.moneda,
+                                            ),
+                                        style: TextStyle(
+                                          color: isDark
+                                              ? Colors.white
+                                              : Colors.black87,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 14,
+                                        ),
                                       ),
                                     ),
                                   ],

@@ -10,6 +10,7 @@ import '../models/categoria.dart';
 import '../models/category.dart';
 import '../models/gasto.dart';
 import '../models/transaction_model.dart';
+import '../services/currency_service.dart';
 
 class AppState extends ChangeNotifier {
   // Configuración (SharedPreferences)
