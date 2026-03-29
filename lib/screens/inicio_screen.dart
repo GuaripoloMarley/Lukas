@@ -52,7 +52,7 @@ class _InicioScreenState extends State<InicioScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'BALANCE TOTAL',
+                          'BALANCE TOTAL v2',
                           style: TextStyle(
                             color: isDark
                                 ? Colors.white38
