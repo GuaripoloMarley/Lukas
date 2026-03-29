@@ -22,7 +22,9 @@ class _InicioScreenState extends State<InicioScreen> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: appState,
+  animation: appState,
+  builder: (context, _) {
+    setState(() {}); // 👈 fuerza rebuild
       builder: (context, _) {
         final isDark = appState.modoOscuro;
         final gastos = appState.gastos;
@@ -71,17 +73,20 @@ class _InicioScreenState extends State<InicioScreen> {
                           ),
                           duration: const Duration(seconds: 1),
                           onEnd: () => _lastBalance = appState.totalMes,
-                          builder: (context, value, child) => Text(
-                            formatoMoneda(value, appState.moneda),
-                            style: GoogleFonts.montserrat(
-                              fontSize: 48,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -2,
-                              color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF6366F1),
-                            ),
-                          ),
+                          builder: (context, value, child) => FutureBuilder<String>(
+  future: formatoMonedaAsync(value, 'CLP', appState.moneda),
+  builder: (context, snapshot) => Text(
+    snapshot.data ?? formatoMoneda(value, appState.moneda),
+    style: GoogleFonts.montserrat(
+      fontSize: 48,
+      fontWeight: FontWeight.w900,
+      letterSpacing: -2,
+      color: isDark
+          ? Colors.white
+          : const Color(0xFF6366F1),
+    ),
+  ),
+),
                         ),
                       ],
                     ),
