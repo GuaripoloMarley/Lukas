@@ -20,10 +20,11 @@ class SmartParser {
   static Future<ParsedExpense> parse(String input) async {
     if (appState.geminiApiKey != null && appState.geminiApiKey!.isNotEmpty) {
       try {
+        debugPrint('🤖 Consultando a Gemini por: "$input"');
         final result = await _parseAI(input, appState.geminiApiKey!);
         if (result != null) return result;
       } catch (e) {
-        debugPrint('Gemini Error: $e');
+        debugPrint('❌ Error Gemini: $e');
       }
     }
     return _parseLocal(input);
@@ -38,18 +39,18 @@ class SmartParser {
 
     final prompt =
         '''
-    Contexto: Asistente contable chileno.
-    Fecha de HOY: ${DateTime.now().toIso8601String()}
+    Contexto: Asistente financiero chileno.
+    HOY es: ${DateTime.now().toIso8601String()}
     Entrada: "$input"
 
     Tareas:
-    1. Monto: "23 lukitas" -> 23000. 
-    2. Fecha: "anteayer/antes de ayer" -> resta 2 días exactos a HOY. "ayer" -> resta 1 día.
-    3. Categoría: Escoger estrictamente de [Comida, Transporte, Compras, Ocio, Cuentas, Viajes, Salud, Otro].
-    4. Descripción: "tillas en oferta" -> "Zapatillas".
+    1. Monto: "23 lucas" -> 23000. 
+    2. Fecha: "anteayer" -> resta 2 días a HOY. "ayer" -> resta 1 día.
+    3. Categoría: Escoger de [Comida, Transporte, Compras, Ocio, Cuentas, Viajes, Salud, Otro].
+    4. Descripción: Limpia la frase (ej: "tillas" -> "Zapatillas").
 
-    Retorna solo JSON:
-    {"monto": double, "descripcion": string, "categoria": string, "fecha": "string_iso8601"}
+    Responde SOLO JSON:
+    {"monto": double, "descripcion": string, "categoria": string, "fecha": "ISO8601"}
     ''';
 
     final response = await model.generateContent([Content.text(prompt)]);
@@ -69,7 +70,8 @@ class SmartParser {
   }
 
   static ParsedExpense _parseLocal(String input) {
-    // Fallback minimalista por si falla la red
+    debugPrint('🏠 Usando Modo Local para: "$input"');
+    // Tu lógica de regex simplificada aquí...
     return ParsedExpense(
       monto: 0,
       descripcion: input,

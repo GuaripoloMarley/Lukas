@@ -1,156 +1,85 @@
-import 'package:flutter/material.dart';
-import 'inicio_screen.dart';
-import 'agregar_screen.dart';
-import 'reportes_screen.dart';
-import 'ajustes_screen.dart';
-import '../widgets/glass_container.dart';
-import '../state/app_state.dart';
+// En tu State de MainScreen:
+final TextEditingController _iaController = TextEditingController();
+bool _isProcessing = false;
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _index = 0;
-  late PageController _pageController;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  void _cambiarPantalla(int index) {
-    setState(() => _index = index);
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: appState,
-      builder: (context, _) {
-        final isDark = appState.modoOscuro;
-
-        return Scaffold(
-          extendBody: true,
-          body: PageView(
-            controller: _pageController,
-            onPageChanged: (i) => setState(() => _index = i),
-            children: [
-              InicioScreen(),
-              AgregarScreen(),
-              ReportesScreen(),
-              AjustesScreen(),
-            ],
-          ),
-          bottomNavigationBar: Container(
-            margin: const EdgeInsets.fromLTRB(24, 0, 24, 30),
-            child: GlassContainer(
-              height: 70,
-              blur: 20,
-              opacity: isDark ? 0.1 : 0.8,
-              color: isDark
-                  ? Colors.white.withAlpha(13)
-                  : Colors.white.withAlpha(230),
-              borderRadius: BorderRadius.circular(35),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildNavItem(
-                    0,
-                    Icons.home_rounded,
-                    Icons.home_outlined,
-                    'Inicio',
-                    isDark,
-                  ),
-                  _buildNavItem(
-                    1,
-                    Icons.add_circle_rounded,
-                    Icons.add_circle_outline,
-                    'Nuevo',
-                    isDark,
-                  ),
-                  _buildNavItem(
-                    2,
-                    Icons.bar_chart_rounded,
-                    Icons.bar_chart_outlined,
-                    'Reportes',
-                    isDark,
-                  ),
-                  _buildNavItem(
-                    3,
-                    Icons.settings_rounded,
-                    Icons.settings_outlined,
-                    'Ajustes',
-                    isDark,
-                  ),
-                ],
+// Dentro del build, debajo de tu Balance:
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text('ENTRADA RÁPIDA', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2)),
+        _buildAiBadge(), // El indicador visual
+      ],
+    ),
+    const SizedBox(height: 12),
+    GlassContainer(
+      child: TextField(
+        controller: _iaController,
+        enabled: !_isProcessing,
+        textInputAction: TextInputAction.done,
+        onSubmitted: (value) async {
+          if (value.trim().isEmpty) return;
+          
+          setState(() => _isProcessing = true);
+          
+          // 1. La IA (o local) procesa el texto
+          final resultado = await SmartParser.parse(value);
+          
+          // 2. GUARDADO AUTOMÁTICO
+          if (resultado.monto > 0) {
+            appState.agregarGasto(Gasto(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              nombre: resultado.descripcion,
+              monto: resultado.monto,
+              categoria: resultado.categoria,
+              fecha: resultado.fecha,
+              moneda: appState.moneda,
+            ));
+            
+            _iaController.clear();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('✅ Guardado: ${resultado.descripcion} por \$${resultado.monto.toInt()}'),
+                backgroundColor: const Color(0xFF6366F1),
+                duration: const Duration(seconds: 2),
               ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildNavItem(
-    int index,
-    IconData selectedIcon,
-    IconData unselectedIcon,
-    String label,
-    bool isDark,
-  ) {
-    final isSelected = _index == index;
-    final accentColor = const Color(0xFF6366F1);
-    final iconColor = isSelected
-        ? accentColor
-        : (isDark ? Colors.white54 : Colors.black54);
-
-    return GestureDetector(
-      onTap: () => _cambiarPantalla(index),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? accentColor.withAlpha(26) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isSelected ? selectedIcon : unselectedIcon,
-              color: iconColor,
-              size: 24,
-            ),
-            if (isSelected)
-              Container(
-                margin: const EdgeInsets.only(top: 4),
-                width: 4,
-                height: 4,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: accentColor,
-                ),
-              ),
-          ],
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('⚠️ No pude detectar el monto. Intenta de nuevo.'))
+            );
+          }
+          
+          setState(() => _isProcessing = false);
+        },
+        decoration: InputDecoration(
+          hintText: _isProcessing ? 'Procesando...' : 'Escribe y presiona Enter...',
+          prefixIcon: _isProcessing 
+              ? const Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(strokeWidth: 2))
+              : const Icon(Icons.auto_awesome, color: Color(0xFF6366F1)),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(20),
         ),
       ),
-    );
-  }
+    ),
+  ],
+)
+
+// Indicador Visual
+Widget _buildAiBadge() {
+  final bool hasKey = appState.geminiApiKey != null && appState.geminiApiKey!.isNotEmpty;
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      color: hasKey ? Colors.green.withOpacity(0.1) : Colors.white10,
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: hasKey ? Colors.greenAccent : Colors.white24),
+    ),
+    child: Text(
+      hasKey ? 'IA ACTIVA' : 'MODO LOCAL',
+      style: TextStyle(fontSize: 8, color: hasKey ? Colors.greenAccent : Colors.white38, fontWeight: FontWeight.bold),
+    ),
+  );
 }
