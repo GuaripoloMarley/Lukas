@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../state/app_state.dart';
 import '../models/gasto.dart';
-import '../models/parsed_expense.dart';
-import '../services/smart_parser.dart';
+import '../models/parsed_expense.dart'; // Solo para la clase de datos
+import '../services/smart_parser.dart'; // Solo para la lógica .parse()
 import '../widgets/glass_container.dart';
 
 class MainScreen extends StatefulWidget {
