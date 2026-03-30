@@ -14,8 +14,17 @@ class AgregarScreen extends StatefulWidget {
 class _AgregarScreenState extends State<AgregarScreen> {
   final _descCtrl = TextEditingController();
   final _montoCtrl = TextEditingController();
+  final FocusNode _conceptoFocus = FocusNode();
   String _catSeleccionada = 'Comida';
   DateTime _fecha = DateTime.now();
+
+  @override
+  void dispose() {
+    _descCtrl.dispose();
+    _montoCtrl.dispose();
+    _conceptoFocus.dispose();
+    super.dispose();
+  }
 
   Future<void> _seleccionarFecha(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -65,7 +74,7 @@ class _AgregarScreenState extends State<AgregarScreen> {
         monto: monto,
         categoria: _catSeleccionada,
         fecha: _fecha,
-        moneda: appState.moneda, // 👈 ESTA LÍNEA
+        moneda: appState.moneda,
       ),
     );
 
@@ -111,7 +120,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // MONTO CARD
             GlassContainer(
               padding: const EdgeInsets.all(24),
               opacity: isDark ? 0.1 : 0.8,
@@ -136,6 +144,9 @@ class _AgregarScreenState extends State<AgregarScreen> {
                       decimal: true,
                     ),
                     textAlign: TextAlign.center,
+                    textInputAction: TextInputAction.next,
+                    onSubmitted: (_) =>
+                        FocusScope.of(context).requestFocus(_conceptoFocus),
                     style: GoogleFonts.montserrat(
                       fontSize: 42,
                       fontWeight: FontWeight.w900,
@@ -157,9 +168,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
                         fontSize: 32,
                       ),
                     ),
-                    onChanged: (v) {
-                      // Opcional: Podríamos añadir formateo en tiempo real aquí.
-                    },
                   ),
                 ],
               ),
@@ -167,7 +175,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
 
             const SizedBox(height: 32),
 
-            // DESCRIPCION
             Text(
               'CONCEPTO',
               style: TextStyle(
@@ -185,6 +192,7 @@ class _AgregarScreenState extends State<AgregarScreen> {
                   : const Color(0xFFF8FAFC),
               child: TextField(
                 controller: _descCtrl,
+                focusNode: _conceptoFocus,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
                   hintText: 'Ej: Almuerzo con amigos',
@@ -201,7 +209,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
 
             const SizedBox(height: 32),
 
-            // FECHA SELECTOR
             Text(
               'FECHA',
               style: TextStyle(
@@ -246,7 +253,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
 
             const SizedBox(height: 32),
 
-            // CATEGORIAS
             Text(
               'CATEGORÍA',
               style: TextStyle(
@@ -313,7 +319,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
 
             const SizedBox(height: 48),
 
-            // BOTON GUARDAR
             SizedBox(
               width: double.infinity,
               height: 60,
