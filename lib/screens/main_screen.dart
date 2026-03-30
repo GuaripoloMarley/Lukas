@@ -14,6 +14,28 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _index = 0;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _cambiarPantalla(int index) {
+    setState(() => _index = index);
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +46,9 @@ class _MainScreenState extends State<MainScreen> {
 
         return Scaffold(
           extendBody: true,
-          body: IndexedStack(
-            index: _index,
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (i) => setState(() => _index = i),
             children: [
               InicioScreen(),
               AgregarScreen(),
@@ -38,9 +61,7 @@ class _MainScreenState extends State<MainScreen> {
             child: GlassContainer(
               height: 70,
               blur: 20,
-              opacity: isDark
-                  ? 0.1
-                  : 0.8, // Más opacidad en modo claro para legibilidad
+              opacity: isDark ? 0.1 : 0.8,
               color: isDark
                   ? Colors.white.withAlpha(13)
                   : Colors.white.withAlpha(230),
@@ -99,7 +120,7 @@ class _MainScreenState extends State<MainScreen> {
         : (isDark ? Colors.white54 : Colors.black54);
 
     return GestureDetector(
-      onTap: () => setState(() => _index = index),
+      onTap: () => _cambiarPantalla(index),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
