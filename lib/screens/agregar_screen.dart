@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../state/app_state.dart';
 import '../models/gasto.dart';
 import '../widgets/glass_container.dart';
+import '../services/smart_parser.dart';
 
 class AgregarScreen extends StatefulWidget {
   const AgregarScreen({super.key});
@@ -14,16 +15,46 @@ class AgregarScreen extends StatefulWidget {
 class _AgregarScreenState extends State<AgregarScreen> {
   final _descCtrl = TextEditingController();
   final _montoCtrl = TextEditingController();
+  final _aiCtrl = TextEditingController();
   final FocusNode _conceptoFocus = FocusNode();
   String _catSeleccionada = 'Comida';
   DateTime _fecha = DateTime.now();
+  bool _isLoadingAI = false;
 
   @override
   void dispose() {
     _descCtrl.dispose();
     _montoCtrl.dispose();
+    _aiCtrl.dispose();
     _conceptoFocus.dispose();
     super.dispose();
+  }
+
+  void _usarIA() async {
+    if (_aiCtrl.text.trim().isEmpty) return;
+
+    setState(() => _isLoadingAI = true);
+    final resultado = await SmartParser.parse(_aiCtrl.text);
+
+    setState(() {
+      _montoCtrl.text = resultado.monto > 0
+          ? resultado.monto.toInt().toString()
+          : "";
+      _descCtrl.text = resultado.descripcion;
+      _catSeleccionada = resultado.categoria;
+      _fecha = resultado.fecha;
+      _isLoadingAI = false;
+      _aiCtrl.clear();
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✨ Datos procesados por IA'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
   }
 
   Future<void> _seleccionarFecha(BuildContext context) async {
@@ -32,22 +63,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
       initialDate: _fecha,
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
-      builder: (context, child) {
-        return Theme(
-          data: appState.modoOscuro
-              ? ThemeData.dark().copyWith(
-                  colorScheme: const ColorScheme.dark(
-                    primary: Color(0xFF6366F1),
-                  ),
-                )
-              : ThemeData.light().copyWith(
-                  colorScheme: const ColorScheme.light(
-                    primary: Color(0xFF6366F1),
-                  ),
-                ),
-          child: child!,
-        );
-      },
     );
     if (picked != null && picked != _fecha) {
       setState(() => _fecha = picked);
@@ -78,14 +93,9 @@ class _AgregarScreenState extends State<AgregarScreen> {
       ),
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('✅ Gasto guardado'),
-        backgroundColor: const Color(0xFF6366F1),
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.fromLTRB(24, 0, 24, 110),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('✅ Gasto guardado')));
 
     _descCtrl.clear();
     _montoCtrl.clear();
@@ -104,11 +114,10 @@ class _AgregarScreenState extends State<AgregarScreen> {
       appBar: AppBar(
         title: Text(
           'NUEVO GASTO',
-          style: TextStyle(
+          style: GoogleFonts.montserrat(
             fontSize: 12,
             fontWeight: FontWeight.w800,
             letterSpacing: 2.0,
-            color: isDark ? Colors.white : Colors.black87,
           ),
         ),
         centerTitle: true,
@@ -120,86 +129,31 @@ class _AgregarScreenState extends State<AgregarScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GlassContainer(
-              padding: const EdgeInsets.all(24),
-              opacity: isDark ? 0.1 : 0.8,
-              color: isDark
-                  ? Colors.white.withAlpha(13)
-                  : const Color(0xFFF8FAFC),
-              child: Column(
-                children: [
-                  Text(
-                    '¿CUÁNTO GASTASTE?',
-                    style: TextStyle(
-                      color: isDark ? Colors.white38 : const Color(0xFF64748B),
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _montoCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    textAlign: TextAlign.center,
-                    textInputAction: TextInputAction.next,
-                    onSubmitted: (_) =>
-                        FocusScope.of(context).requestFocus(_conceptoFocus),
-                    style: GoogleFonts.montserrat(
-                      fontSize: 42,
-                      fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.white : const Color(0xFF6366F1),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: '0',
-                      hintStyle: TextStyle(
-                        color: isDark ? Colors.white10 : Colors.black12,
-                      ),
-                      border: InputBorder.none,
-                      prefixText: appState.moneda == 'USD'
-                          ? 'US\$ '
-                          : (appState.moneda == 'EUR' ? '€ ' : '\$ '),
-                      prefixStyle: TextStyle(
-                        color: isDark
-                            ? Colors.white24
-                            : const Color(0xFF64748B),
-                        fontSize: 32,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            Text(
-              'CONCEPTO',
-              style: TextStyle(
-                color: isDark ? Colors.white38 : const Color(0xFF64748B),
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 2.0,
-              ),
-            ),
+            // --- SECCIÓN IA ---
+            _buildLabel('ENTRADA INTELIGENTE (IA)', isDark),
             const SizedBox(height: 12),
             GlassContainer(
               opacity: isDark ? 0.1 : 0.8,
-              color: isDark
-                  ? Colors.white.withAlpha(13)
-                  : const Color(0xFFF8FAFC),
               child: TextField(
-                controller: _descCtrl,
-                focusNode: _conceptoFocus,
+                controller: _aiCtrl,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
-                  hintText: 'Ej: Almuerzo con amigos',
+                  hintText: 'Ej: 15 mil en bencina ayer...',
                   hintStyle: TextStyle(
-                    color: isDark
-                        ? Colors.white.withAlpha(51)
-                        : const Color(0xFF94A3B8),
+                    color: isDark ? Colors.white24 : Colors.black26,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: _isLoadingAI
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(
+                            Icons.auto_awesome,
+                            color: Color(0xFF6366F1),
+                          ),
+                    onPressed: _usarIA,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.all(20),
@@ -207,25 +161,68 @@ class _AgregarScreenState extends State<AgregarScreen> {
               ),
             ),
 
-            const SizedBox(height: 32),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Divider(color: Colors.white10),
+            ),
 
-            Text(
-              'FECHA',
-              style: TextStyle(
-                color: isDark ? Colors.white38 : const Color(0xFF64748B),
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 2.0,
+            // --- MONTO ---
+            _buildLabel('¿CUÁNTO GASTASTE?', isDark),
+            const SizedBox(height: 16),
+            GlassContainer(
+              padding: const EdgeInsets.all(24),
+              opacity: isDark ? 0.1 : 0.8,
+              child: TextField(
+                controller: _montoCtrl,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                textAlign: TextAlign.center,
+                style: GoogleFonts.montserrat(
+                  fontSize: 42,
+                  fontWeight: FontWeight.w900,
+                  color: isDark ? Colors.white : const Color(0xFF6366F1),
+                ),
+                decoration: InputDecoration(
+                  hintText: '0',
+                  border: InputBorder.none,
+                  prefixText: '\$ ',
+                  prefixStyle: TextStyle(
+                    color: isDark ? Colors.white24 : Colors.black26,
+                    fontSize: 32,
+                  ),
+                ),
               ),
             ),
+
+            const SizedBox(height: 32),
+
+            // --- CONCEPTO ---
+            _buildLabel('CONCEPTO', isDark),
+            const SizedBox(height: 12),
+            GlassContainer(
+              opacity: isDark ? 0.1 : 0.8,
+              child: TextField(
+                controller: _descCtrl,
+                focusNode: _conceptoFocus,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                decoration: const InputDecoration(
+                  hintText: 'Ej: Almuerzo con amigos',
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.all(20),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // --- FECHA ---
+            _buildLabel('FECHA', isDark),
             const SizedBox(height: 12),
             GestureDetector(
               onTap: () => _seleccionarFecha(context),
               child: GlassContainer(
                 opacity: isDark ? 0.1 : 0.8,
-                color: isDark
-                    ? Colors.white.withAlpha(13)
-                    : const Color(0xFFF8FAFC),
                 padding: const EdgeInsets.all(20),
                 child: Row(
                   children: [
@@ -243,7 +240,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
                       style: TextStyle(
                         color: isDark ? Colors.white : Colors.black87,
                         fontWeight: FontWeight.w700,
-                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -253,15 +249,8 @@ class _AgregarScreenState extends State<AgregarScreen> {
 
             const SizedBox(height: 32),
 
-            Text(
-              'CATEGORÍA',
-              style: TextStyle(
-                color: isDark ? Colors.white38 : const Color(0xFF64748B),
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 2.0,
-              ),
-            ),
+            // --- CATEGORÍAS ---
+            _buildLabel('CATEGORÍA', isDark),
             const SizedBox(height: 16),
             Wrap(
               spacing: 12,
@@ -279,15 +268,8 @@ class _AgregarScreenState extends State<AgregarScreen> {
                     decoration: BoxDecoration(
                       color: isSel
                           ? c.color
-                          : (isDark
-                                ? c.color.withAlpha(13)
-                                : c.color.withAlpha(26)),
+                          : c.color.withAlpha(isDark ? 13 : 26),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isSel
-                            ? (isDark ? Colors.white24 : Colors.black12)
-                            : Colors.transparent,
-                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -307,7 +289,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
                             fontWeight: isSel
                                 ? FontWeight.w800
                                 : FontWeight.w600,
-                            fontSize: 12,
                           ),
                         ),
                       ],
@@ -330,7 +311,6 @@ class _AgregarScreenState extends State<AgregarScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  elevation: 0,
                 ),
                 child: const Text(
                   'GUARDAR GASTO',
@@ -343,6 +323,18 @@ class _AgregarScreenState extends State<AgregarScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text, bool isDark) {
+    return Text(
+      text,
+      style: TextStyle(
+        color: isDark ? Colors.white38 : const Color(0xFF64748B),
+        fontSize: 10,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 2.0,
       ),
     );
   }
