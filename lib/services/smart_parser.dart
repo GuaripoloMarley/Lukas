@@ -23,7 +23,7 @@ class SmartParser {
         final result = await _parseAI(input, appState.geminiApiKey!);
         if (result != null) return result;
       } catch (e) {
-        debugPrint('Gemini Error: $e. Usando local fallback.');
+        debugPrint('Gemini Error: $e');
       }
     }
     return _parseLocal(input);
@@ -38,20 +38,18 @@ class SmartParser {
 
     final prompt =
         '''
-    Eres un asistente de finanzas personales experto en jerga chilena y latinoamericana.
-    Extrae datos de la frase de gasto y responde ÚNICAMENTE en formato JSON.
+    Contexto: Asistente contable chileno.
+    Fecha de HOY: ${DateTime.now().toIso8601String()}
+    Entrada: "$input"
 
-    Lista de Categorías permitidas: Comida, Transporte, Compras, Ocio, Cuentas, Viajes, Salud, Otro.
+    Tareas:
+    1. Monto: "23 lukitas" -> 23000. 
+    2. Fecha: "anteayer/antes de ayer" -> resta 2 días exactos a HOY. "ayer" -> resta 1 día.
+    3. Categoría: Escoger estrictamente de [Comida, Transporte, Compras, Ocio, Cuentas, Viajes, Salud, Otro].
+    4. Descripción: "tillas en oferta" -> "Zapatillas".
 
-    Reglas:
-    1. El monto debe ser un número (double). "lukas", "k", "mil" son miles.
-    2. La descripción debe ser corta y limpia.
-    3. La categoría debe ser una de la lista.
-    4. La fecha en formato ISO8601 relativo a hoy (${DateTime.now().toIso8601String()}).
-
-    Frase: "$input"
-
-    Esquema JSON: {"monto": 0.0, "descripcion": "", "categoria": "", "fecha": ""}
+    Retorna solo JSON:
+    {"monto": double, "descripcion": string, "categoria": string, "fecha": "string_iso8601"}
     ''';
 
     final response = await model.generateContent([Content.text(prompt)]);
@@ -61,93 +59,22 @@ class SmartParser {
       final Map<String, dynamic> data = jsonDecode(response.text!);
       return ParsedExpense(
         monto: (data['monto'] as num).toDouble(),
-        descripcion: data['descripcion'] as String,
-        categoria: _validarCategoria(data['categoria'] as String),
-        fecha: DateTime.parse(data['fecha'] as String),
+        descripcion: data['descripcion'],
+        categoria: data['categoria'],
+        fecha: DateTime.parse(data['fecha']),
       );
     } catch (e) {
       return null;
     }
   }
 
-  static String _validarCategoria(String cat) {
-    const validas = [
-      'Comida',
-      'Transporte',
-      'Compras',
-      'Ocio',
-      'Cuentas',
-      'Viajes',
-      'Salud',
-      'Otro',
-    ];
-    return validas.contains(cat) ? cat : 'Otro';
-  }
-
   static ParsedExpense _parseLocal(String input) {
-    double monto = 0;
-    String categoria = "Otro";
-    DateTime fecha = DateTime.now();
-    final lowerInput = input.toLowerCase();
-
-    final RegExp numReg = RegExp(
-      r'(\d+(?:[.,]\d+)?)\s*(lukitas?|lucitas?|luki|lukas?|lucas?|luca|k|mil|\$)?',
-      caseSensitive: false,
-    );
-    final match = numReg.firstMatch(lowerInput);
-    if (match != null) {
-      String valStr = match.group(1)!.replaceAll(',', '.');
-      double base = double.tryParse(valStr) ?? 0;
-      String? suffix = match.group(2);
-      if (suffix != null) {
-        final s = suffix.toLowerCase();
-        if (s.contains('luk') || s.contains('luc') || s == 'k' || s == 'mil') {
-          monto = base * 1000;
-        } else {
-          monto = base;
-        }
-      } else {
-        monto = base;
-      }
-    }
-
-    final conceptMap = {
-      'café': 'Comida',
-      'almuerzo': 'Comida',
-      'pizza': 'Comida',
-      'super': 'Comida',
-      'uber': 'Transporte',
-      'taxi': 'Transporte',
-      'micro': 'Transporte',
-      'bencina': 'Transporte',
-      'ropa': 'Compras',
-      'tillas': 'Compras',
-      'mall': 'Compras',
-      'netflix': 'Ocio',
-      'cine': 'Ocio',
-      'carrete': 'Ocio',
-      'steam': 'Ocio',
-      'luz': 'Cuentas',
-      'agua': 'Cuentas',
-      'internet': 'Cuentas',
-      'plan': 'Cuentas',
-      'vuelo': 'Viajes',
-      'hotel': 'Viajes',
-      'pasaje': 'Viajes',
-      'médico': 'Salud',
-      'farmacia': 'Salud',
-      'gym': 'Salud',
-    };
-
-    conceptMap.forEach((key, value) {
-      if (lowerInput.contains(key)) categoria = value;
-    });
-
+    // Fallback minimalista por si falla la red
     return ParsedExpense(
-      monto: monto,
-      descripcion: input.length > 20 ? input.substring(0, 20) : input,
-      categoria: categoria,
-      fecha: fecha,
+      monto: 0,
+      descripcion: input,
+      categoria: "Otro",
+      fecha: DateTime.now(),
     );
   }
 }
