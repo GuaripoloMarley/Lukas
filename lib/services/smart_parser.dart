@@ -2,25 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../state/app_state.dart';
-
-class ParsedExpense {
-  final double monto;
-  final String descripcion, categoria;
-  final DateTime fecha;
-
-  ParsedExpense({
-    required this.monto,
-    required this.descripcion,
-    required this.categoria,
-    required this.fecha,
-  });
-}
+import '../models/parsed_expense.dart';
 
 class SmartParser {
   static Future<ParsedExpense> parse(String input) async {
     if (appState.geminiApiKey != null && appState.geminiApiKey!.isNotEmpty) {
       try {
-        debugPrint('🤖 Consultando a Gemini por: "$input"');
+        debugPrint('🤖 Consultando Gemini...');
         final result = await _parseAI(input, appState.geminiApiKey!);
         if (result != null) return result;
       } catch (e) {
@@ -39,39 +27,27 @@ class SmartParser {
 
     final prompt =
         '''
-    Contexto: Asistente financiero chileno.
-    HOY es: ${DateTime.now().toIso8601String()}
-    Entrada: "$input"
-
-    Tareas:
-    1. Monto: "23 lucas" -> 23000. 
-    2. Fecha: "anteayer" -> resta 2 días a HOY. "ayer" -> resta 1 día.
-    3. Categoría: Escoger de [Comida, Transporte, Compras, Ocio, Cuentas, Viajes, Salud, Otro].
-    4. Descripción: Limpia la frase (ej: "tillas" -> "Zapatillas").
-
-    Responde SOLO JSON:
-    {"monto": double, "descripcion": string, "categoria": string, "fecha": "ISO8601"}
+    Eres un asistente contable chileno. Hoy es ${DateTime.now().toIso8601String()}.
+    Extrae de: "$input"
+    Reglas: 1 luca=1000. Anteayer=Hoy-2 días. Ayer=Hoy-1 día.
+    Categorías: Comida, Transporte, Compras, Ocio, Cuentas, Viajes, Salud, Otro.
+    Responde SOLO JSON: {"monto": double, "descripcion": string, "categoria": string, "fecha": "ISO8601"}
     ''';
 
     final response = await model.generateContent([Content.text(prompt)]);
     if (response.text == null) return null;
 
-    try {
-      final Map<String, dynamic> data = jsonDecode(response.text!);
-      return ParsedExpense(
-        monto: (data['monto'] as num).toDouble(),
-        descripcion: data['descripcion'],
-        categoria: data['categoria'],
-        fecha: DateTime.parse(data['fecha']),
-      );
-    } catch (e) {
-      return null;
-    }
+    final data = jsonDecode(response.text!);
+    return ParsedExpense(
+      monto: (data['monto'] as num).toDouble(),
+      descripcion: data['descripcion'] as String,
+      categoria: data['categoria'] as String,
+      fecha: DateTime.parse(data['fecha'] as String),
+    );
   }
 
   static ParsedExpense _parseLocal(String input) {
-    debugPrint('🏠 Usando Modo Local para: "$input"');
-    // Tu lógica de regex simplificada aquí...
+    // Aquí podrías poner tu lógica de regex original si quieres
     return ParsedExpense(
       monto: 0,
       descripcion: input,
